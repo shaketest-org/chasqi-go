@@ -35,61 +35,61 @@ func (m *MockNodeVisitor) EXPECT() *MockNodeVisitorMockRecorder {
 }
 
 // Delete mocks base method.
-func (m *MockNodeVisitor) Delete(host, url string, headers, body map[string][]string) (*types.ResponseResult, error) {
+func (m *MockNodeVisitor) Delete(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", host, url, headers, body)
+	ret := m.ctrl.Call(m, "Delete", url, headers, body)
 	ret0, _ := ret[0].(*types.ResponseResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockNodeVisitorMockRecorder) Delete(host, url, headers, body interface{}) *gomock.Call {
+func (mr *MockNodeVisitorMockRecorder) Delete(url, headers, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNodeVisitor)(nil).Delete), host, url, headers, body)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNodeVisitor)(nil).Delete), url, headers, body)
 }
 
 // Get mocks base method.
-func (m *MockNodeVisitor) Get(host, url string, headers map[string][]string) (*types.ResponseResult, error) {
+func (m *MockNodeVisitor) Get(url string, headers map[string][]string) (*types.ResponseResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", host, url, headers)
+	ret := m.ctrl.Call(m, "Get", url, headers)
 	ret0, _ := ret[0].(*types.ResponseResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockNodeVisitorMockRecorder) Get(host, url, headers interface{}) *gomock.Call {
+func (mr *MockNodeVisitorMockRecorder) Get(url, headers interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNodeVisitor)(nil).Get), host, url, headers)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNodeVisitor)(nil).Get), url, headers)
 }
 
 // Post mocks base method.
-func (m *MockNodeVisitor) Post(host, url string, headers, body map[string][]string) (*types.ResponseResult, error) {
+func (m *MockNodeVisitor) Post(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Post", host, url, headers, body)
+	ret := m.ctrl.Call(m, "Post", url, headers, body)
 	ret0, _ := ret[0].(*types.ResponseResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Post indicates an expected call of Post.
-func (mr *MockNodeVisitorMockRecorder) Post(host, url, headers, body interface{}) *gomock.Call {
+func (mr *MockNodeVisitorMockRecorder) Post(url, headers, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Post", reflect.TypeOf((*MockNodeVisitor)(nil).Post), host, url, headers, body)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Post", reflect.TypeOf((*MockNodeVisitor)(nil).Post), url, headers, body)
 }
 
 // Put mocks base method.
-func (m *MockNodeVisitor) Put(host, url string, headers, body map[string][]string) (*types.ResponseResult, error) {
+func (m *MockNodeVisitor) Put(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Put", host, url, headers, body)
+	ret := m.ctrl.Call(m, "Put", url, headers, body)
 	ret0, _ := ret[0].(*types.ResponseResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Put indicates an expected call of Put.
-func (mr *MockNodeVisitorMockRecorder) Put(host, url, headers, body interface{}) *gomock.Call {
+func (mr *MockNodeVisitorMockRecorder) Put(url, headers, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Put", reflect.TypeOf((*MockNodeVisitor)(nil).Put), host, url, headers, body)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Put", reflect.TypeOf((*MockNodeVisitor)(nil).Put), url, headers, body)
 }

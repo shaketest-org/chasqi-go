@@ -34,6 +34,31 @@ func (s *AgentTestSuite) TestAgent_Start() {
 	tree := testTree()
 	subject := New(0, tree, nil, s.NodeVisitorMock)
 	subject.Start()
+
+	s.NodeVisitorMock.EXPECT().Get(
+		"/api/users",
+		map[string]interface{}{
+			"Content-Type": "application/json",
+		},
+	).Times(1)
+	s.NodeVisitorMock.EXPECT().Post(
+		"/api/users",
+		map[string]interface{}{
+			"Content-Type": "application/json",
+		},
+		map[string]interface{}{
+			"username": "JaneDoe",
+			"userId":   2,
+		}).Times(1)
+	s.NodeVisitorMock.EXPECT().Put(
+		"/api/users/2",
+		map[string]interface{}{
+			"Content-Type": "application/json",
+		},
+		map[string]interface{}{
+			"username": "JaneDoe",
+			"userId":   2,
+		})
 }
 
 func testTree() *types.Tree {
