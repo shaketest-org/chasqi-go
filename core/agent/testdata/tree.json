@@ -1,0 +1,56 @@
+{
+  "root": {
+    "method": "GET",
+    "path": "/api/users",
+    "body": {
+      "userId": 1,
+      "username": "JohnDoe"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "next": {
+      "delay": 0.5,
+      "after": {
+        "method": "POST",
+        "path": "/api/users",
+        "body": {
+          "userId": 2,
+          "username": "JaneDoe"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "next": {
+          "delay": 0.2,
+          "after": {
+            "method": "GET",
+            "path": "/api/users/2",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "next": {
+              "delay": 0.1,
+              "after": {
+                "method": "PUT",
+                "path": "/api/users/2",
+                "body": {
+                  "userId": 2,
+                  "username": "JaneSmith"
+                },
+                "headers": {
+                  "Content-Type": "application/json"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "id": "tree_1",
+  "config": {
+    "agentAmount": 10,
+    "maxFailureRate": 0.2
+  }
+}
