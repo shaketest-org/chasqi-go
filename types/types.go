@@ -4,12 +4,12 @@ import "time"
 
 type (
 	Node struct {
-		Method  string          `json:"method"`
-		Path    string          `json:"path"`
-		Body    *map[string]any `json:"body"`
-		Headers *map[string]any `json:"header"`
-		Next    *Edge           `json:"next"`
-		Before  *Edge           `json:"before"`
+		Method  string              `json:"method"`
+		Path    string              `json:"path"`
+		Body    map[string]any      `json:"body"`
+		Headers map[string][]string `json:"headers"`
+		Next    *Edge               `json:"next"`
+		Before  *Edge               `json:"before"`
 	}
 
 	Edge struct {
@@ -39,6 +39,7 @@ type (
 
 	ResultPair struct {
 		Node       *Node      `json:"node"`
+		StartedAt  *time.Time `json:"startedAt"`
 		FinishedAt *time.Time `json:"finishedAt"`
 	}
 

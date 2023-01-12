@@ -3,8 +3,8 @@ package engine
 import (
 	"chasqi-go/types"
 	"fmt"
+	"io"
 	"net/http"
-	url2 "net/url"
 	"time"
 )
 
@@ -18,14 +18,15 @@ func NewDefaultHttpClient() *defaultHttpClient {
 	}
 }
 
-func (c *defaultHttpClient) Get(host, url string, headers map[string][]string) (*types.ResponseResult, error) {
+func (c *defaultHttpClient) Visit(method, url string, body io.Reader, headers map[string][]string) (*types.ResponseResult, error) {
 	s := time.Now()
-	req := &http.Request{
-		Method: http.MethodGet,
-		URL: &url2.URL{
-			RawPath: url,
-		},
-		Header: headers,
+
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range headers {
+		req.Header[k] = v
 	}
 
 	resp, err := c.Client.Do(req)

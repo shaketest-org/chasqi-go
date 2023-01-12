@@ -6,6 +6,7 @@ package mock_agent
 
 import (
 	types "chasqi-go/types"
+	io "io"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,62 +35,17 @@ func (m *MockNodeVisitor) EXPECT() *MockNodeVisitorMockRecorder {
 	return m.recorder
 }
 
-// Delete mocks base method.
-func (m *MockNodeVisitor) Delete(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
+// Visit mocks base method.
+func (m *MockNodeVisitor) Visit(method, url string, body io.Reader, headers map[string][]string) (*types.ResponseResult, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", url, headers, body)
+	ret := m.ctrl.Call(m, "Visit", method, url, body, headers)
 	ret0, _ := ret[0].(*types.ResponseResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Delete indicates an expected call of Delete.
-func (mr *MockNodeVisitorMockRecorder) Delete(url, headers, body interface{}) *gomock.Call {
+// Visit indicates an expected call of Visit.
+func (mr *MockNodeVisitorMockRecorder) Visit(method, url, body, headers interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNodeVisitor)(nil).Delete), url, headers, body)
-}
-
-// Get mocks base method.
-func (m *MockNodeVisitor) Get(url string, headers map[string][]string) (*types.ResponseResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", url, headers)
-	ret0, _ := ret[0].(*types.ResponseResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Get indicates an expected call of Get.
-func (mr *MockNodeVisitorMockRecorder) Get(url, headers interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNodeVisitor)(nil).Get), url, headers)
-}
-
-// Post mocks base method.
-func (m *MockNodeVisitor) Post(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Post", url, headers, body)
-	ret0, _ := ret[0].(*types.ResponseResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Post indicates an expected call of Post.
-func (mr *MockNodeVisitorMockRecorder) Post(url, headers, body interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Post", reflect.TypeOf((*MockNodeVisitor)(nil).Post), url, headers, body)
-}
-
-// Put mocks base method.
-func (m *MockNodeVisitor) Put(url string, headers, body map[string][]string) (*types.ResponseResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Put", url, headers, body)
-	ret0, _ := ret[0].(*types.ResponseResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Put indicates an expected call of Put.
-func (mr *MockNodeVisitorMockRecorder) Put(url, headers, body interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Put", reflect.TypeOf((*MockNodeVisitor)(nil).Put), url, headers, body)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Visit", reflect.TypeOf((*MockNodeVisitor)(nil).Visit), method, url, body, headers)
 }

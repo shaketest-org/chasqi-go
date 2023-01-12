@@ -3,10 +3,12 @@
     "method": "GET",
     "path": "/api/users",
     "headers": {
-      "Content-Type": "application/json"
+      "Content-Type": [
+        "application/json"
+      ]
     },
     "next": {
-      "delay": 0.5,
+      "delay": 5,
       "after": {
         "method": "POST",
         "path": "/api/users",
@@ -15,18 +17,22 @@
           "username": "JaneDoe"
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": [
+            "application/json"
+          ]
         },
         "next": {
-          "delay": 0.2,
+          "delay": 2,
           "after": {
             "method": "GET",
             "path": "/api/users/2",
             "headers": {
-              "Content-Type": "application/json"
+              "Content-Type": [
+                "application/json"
+              ]
             },
             "next": {
-              "delay": 0.1,
+              "delay": 3,
               "after": {
                 "method": "PUT",
                 "path": "/api/users/2",
@@ -35,7 +41,9 @@
                   "username": "JaneSmith"
                 },
                 "headers": {
-                  "Content-Type": "application/json"
+                  "Content-Type": [
+                    "application/json"
+                  ]
                 }
               }
             }
