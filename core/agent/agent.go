@@ -13,6 +13,7 @@ type Agent struct {
 	tree     *types.Tree
 	resultCh chan types.TestResult
 	visitor  NodeVisitor
+	stopped  bool
 }
 
 func New(idx int,
@@ -33,7 +34,7 @@ func (a *Agent) Start() {
 	log.Printf("Agent %d started / tree: %s", a.idx, a.tree.ID)
 	var resultSet []*types.ResponseResult
 
-	for currentNode != nil {
+	for currentNode != nil && !a.stopped {
 		var b *bytes.Buffer
 		if currentNode.Body != nil {
 			b = new(bytes.Buffer)
@@ -66,4 +67,5 @@ func (a *Agent) visit() {
 }
 
 func (a *Agent) Stop() {
+	a.stopped = true
 }
