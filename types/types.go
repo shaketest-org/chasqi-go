@@ -37,25 +37,21 @@ type (
 		StartedAt *time.Time `json:"startedAt"`
 	}
 
-	ResultPair struct {
-		Node       *Node      `json:"node"`
-		StartedAt  *time.Time `json:"startedAt"`
-		FinishedAt *time.Time `json:"finishedAt"`
-	}
-
 	TestResult struct {
-		Success      bool          `json:"success"`
-		ErrorCount   int           `json:"errorCount"`
-		SuccessCount int           `json:"successCount"`
-		TreeID       string        `json:"treeID"`
-		Result       []*ResultPair `json:"result"`
-		StartedAt    *time.Time    `json:"startedAt"`
-		FinishedAt   *time.Time    `json:"finishedAt"`
+		ErrorCount   int               `json:"errorCount"`
+		SuccessCount int               `json:"successCount"`
+		TreeID       string            `json:"treeID"`
+		Result       []*ResponseResult `json:"result"`
+		StartedAt    *time.Time        `json:"startedAt"`
+		FinishedAt   *time.Time        `json:"finishedAt"`
 	}
 
 	ResponseResult struct {
-		StatusCode   int   `json:"statusCode"`
-		DurationInMs int64 `json:"durationInMs"`
+		StatusCode   int        `json:"statusCode"`
+		DurationInMs int64      `json:"durationInMs"`
+		StartedAt    *time.Time `json:"startedAt"`
+		FinishedAt   *time.Time `json:"finishedAt"`
+		Node         *Node      `json:"node"`
 	}
 )
 

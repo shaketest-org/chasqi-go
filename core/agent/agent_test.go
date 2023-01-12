@@ -7,7 +7,9 @@ import (
 	_ "embed"
 	"encoding/json"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"sync"
 	"testing"
 )
 
@@ -30,11 +32,27 @@ func (s *AgentTestSuite) SetupTest() {
 	s.resultCh = make(chan types.TestResult)
 }
 
-func (s *AgentTestSuite) TestAgent_Start() {
+func (s *AgentTestSuite) TestAgent_StartShouldCallExpectedRoutes() {
 	tree := testTree()
-	subject := New(0, tree, nil, s.NodeVisitorMock)
+	resultCh := make(chan types.TestResult, 0)
+	subject := New(0, tree, resultCh, s.NodeVisitorMock)
 	postBody := new(bytes.Buffer)
 	putBody := new(bytes.Buffer)
+	successfulResponse := &types.ResponseResult{
+		StatusCode: 200,
+	}
+	var result *types.TestResult
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		for {
+			select {
+			case r := <-resultCh:
+				result = &r
+				wg.Done()
+			}
+		}
+	}()
 	json.NewEncoder(postBody).Encode(
 		map[string]interface{}{
 			"username": "JaneDoe",
@@ -52,14 +70,14 @@ func (s *AgentTestSuite) TestAgent_Start() {
 		map[string][]string{
 			"Content-Type": {"application/json"},
 		},
-	).Times(1)
+	).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"POST",
 		"/api/users",
 		postBody,
 		map[string][]string{
 			"Content-Type": {"application/json"},
-		}).Times(1)
+		}).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"GET",
 		"/api/users/2",
@@ -67,17 +85,21 @@ func (s *AgentTestSuite) TestAgent_Start() {
 		map[string][]string{
 			"Content-Type": {"application/json"},
 		},
-	).Times(1)
+	).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"PUT",
 		"/api/users/2",
 		putBody,
 		map[string][]string{
 			"Content-Type": {"application/json"},
-		})
+		}).Return(successfulResponse, nil).Times(1)
 
 	subject.Start()
-
+	wg.Wait()
+	assert.NotNil(s.T(), result)
+	assert.Equal(s.T(), 4, result.SuccessCount)
+	assert.Equal(s.T(), 0, result.ErrorCount)
+	assert.Equal(s.T(), tree.ID, result.TreeID)
 }
 
 func testTree() *types.Tree {

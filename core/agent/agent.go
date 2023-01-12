@@ -29,10 +29,15 @@ func New(idx int,
 }
 
 func (a *Agent) Start() {
-	// currentNode Node that should be visited
-	currentNode := a.tree.Root
 	log.Printf("Agent %d started / tree: %s", a.idx, a.tree.ID)
+
+	currentNode := a.tree.Root
 	var resultSet []*types.ResponseResult
+	testResult := types.TestResult{}
+	succCount := 0
+	errCount := 0
+	s := time.Now()
+	testResult.StartedAt = &s
 
 	for currentNode != nil && !a.stopped {
 		var b *bytes.Buffer
@@ -49,6 +54,14 @@ func (a *Agent) Start() {
 		if err != nil {
 			log.Printf("Agent %d failed to visit node %s: %s", a.idx, currentNode.Path, err)
 		}
+
+		if result.StatusCode > 299 {
+			errCount++
+		} else {
+			succCount++
+		}
+
+		result.Node = currentNode
 		resultSet = append(resultSet, result)
 		nextEdge := currentNode.Next
 
@@ -56,13 +69,19 @@ func (a *Agent) Start() {
 			time.Sleep(time.Duration(nextEdge.Delay) * time.Second)
 			currentNode = nextEdge.After
 		} else {
+			// we reached the end of the tree
 			currentNode = nil
 		}
 	}
 
-}
+	e := time.Now()
+	testResult.FinishedAt = &e
+	testResult.SuccessCount = succCount
+	testResult.ErrorCount = errCount
+	testResult.Result = resultSet
+	testResult.TreeID = a.tree.ID
 
-func (a *Agent) visit() {
+	a.resultCh <- testResult
 
 }
 
