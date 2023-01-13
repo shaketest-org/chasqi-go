@@ -31,7 +31,7 @@ func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
 	if e.hasStopped {
 		return fmt.Errorf("DefaultEngine has stopped")
 	}
-
+	log.Printf("Enqueuing tree: %s", tree.ID)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.enqueuedTrees = append(e.enqueuedTrees, tree)
@@ -39,8 +39,8 @@ func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
 }
 
 func (e *DefaultEngine) Start() {
-	log.Printf("DefaultEngine started")
-	loopTimer := time.NewTicker(3 * time.Second)
+	log.Printf("Test Engine started")
+	loopTimer := time.NewTicker(1 * time.Second)
 	flushTimer := time.NewTicker(5 * 60 * time.Second)
 coreLoop:
 	for {
@@ -48,7 +48,7 @@ coreLoop:
 		case <-loopTimer.C:
 			e.onTick()
 		case <-flushTimer.C:
-			break
+			e.onFlush()
 		case result := <-e.resultCh:
 			log.Printf("got result with %d entries", len(result.Result))
 			e.onResult(&result)
@@ -82,16 +82,31 @@ func (e *DefaultEngine) onTick() {
 	e.mu.Unlock()
 }
 
+func (e *DefaultEngine) onFlush() {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	for k, v := range e.resultMap {
+		t := time.Now()
+		if t.Sub(*v.FinishedAt) > 5*time.Minute {
+			delete(e.resultMap, k)
+			delete(e.doneTrees, k)
+		}
+	}
+}
+
 func (e *DefaultEngine) onResult(result *types.TestResult) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	t := e.activeTrees[types.TreeID(result.TreeID)]
 	delete(e.activeTrees, types.TreeID(result.TreeID))
+	now := time.Now()
 	e.doneTrees[types.TreeID(result.TreeID)] = t
 	e.statusMap[types.TreeID(result.TreeID)].IsDone = true
+	e.statusMap[types.TreeID(result.TreeID)].FinishedAt = &now
 	e.resultMap[types.TreeID(result.TreeID)] = result
 
 	log.Printf("Finished tree: %s", result.String())
+	log.Printf("Duration was: %s", result.Duration().String())
 }
 
 func (e *DefaultEngine) visitTree(tree *types.Tree) {

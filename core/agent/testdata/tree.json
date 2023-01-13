@@ -1,17 +1,17 @@
 {
   "root": {
     "method": "GET",
-    "path": "http://www.chasqi.com/api/users",
+    "path": "http://www.byteshake.io/api/users",
     "headers": {
       "Content-Type": [
         "application/json"
       ]
     },
     "next": {
-      "delay": 0.5,
+      "delay": 1.5,
       "after": {
         "method": "POST",
-        "path": "http://www.chasqi.com/api/users",
+        "path": "http://www.byteshake.io/api/users",
         "body": {
           "userId": 2,
           "username": "JaneDoe"
@@ -22,20 +22,20 @@
           ]
         },
         "next": {
-          "delay": 0.2,
+          "delay": 2,
           "after": {
             "method": "GET",
-            "path": "http://www.chasqi.com/api/users/2",
+            "path": "http://www.byteshake.io/api/users/2",
             "headers": {
               "Content-Type": [
                 "application/json"
               ]
             },
             "next": {
-              "delay": 0.1,
+              "delay": 1,
               "after": {
                 "method": "PUT",
-                "path": "http://www.chasqi.com/api/users/2",
+                "path": "http://www.byteshake.io/api/users/2",
                 "body": {
                   "userId": 2,
                   "username": "JaneSmith"
@@ -54,7 +54,7 @@
   },
   "id": "tree_1",
   "config": {
-    "agentAmount": 10,
+    "agentAmount": 1000,
     "maxFailureRate": 0.2
   }
 }

@@ -37,9 +37,10 @@ type (
 	}
 
 	LoopStatus struct {
-		TreeID    string     `json:"treeID"`
-		IsDone    bool       `json:"isDone"`
-		StartedAt *time.Time `json:"startedAt"`
+		TreeID     string     `json:"treeID"`
+		IsDone     bool       `json:"isDone"`
+		StartedAt  *time.Time `json:"startedAt"`
+		FinishedAt *time.Time `json:"finishedAt"`
 	}
 
 	TestResult struct {
@@ -69,4 +70,8 @@ func (n *Node) String() string {
 
 func (tr *TestResult) String() string {
 	return fmt.Sprintf("TestResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d, StartedAt: %v, FinishedAt: %v }", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result), tr.StartedAt, tr.FinishedAt)
+}
+
+func (tr *TestResult) Duration() time.Duration {
+	return tr.FinishedAt.Sub(*tr.StartedAt)
 }
