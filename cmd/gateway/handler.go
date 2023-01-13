@@ -5,6 +5,7 @@ import (
 	"chasqi-go/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -17,10 +18,21 @@ func NewHandler(coreEngine *engine.DefaultEngine) *Handler {
 	return &Handler{coreEngine: coreEngine}
 }
 
+func (h *Handler) Handle(c *gin.Context) {
+	switch c.Request.Method {
+	case http.MethodGet:
+		h.Get(c)
+	case http.MethodPost:
+		h.Post(c)
+	}
+}
+
 func (h *Handler) Get(c *gin.Context) {
-	if strings.Contains("status", c.Request.URL.Path) {
+	log.Printf("Path: %s", c.Request.URL.Path)
+	if strings.Contains(c.Request.URL.Path, "status") {
 		treeId := c.Param("treeId")
-		status := h.coreEngine.ById(treeId)
+		status := h.coreEngine.LoopStatus(treeId)
+
 		if status == nil {
 			c.JSON(http.StatusNotFound, gin.H{"message": "not found"})
 			return
@@ -28,9 +40,10 @@ func (h *Handler) Get(c *gin.Context) {
 
 		c.JSON(http.StatusOK, status)
 	}
-	if strings.Contains("result", c.Request.URL.Path) {
+	if strings.Contains(c.Request.URL.Path, "result") {
+		log.Printf("result")
 		treeId := c.Param("treeId")
-		result := h.coreEngine.Get(treeId)
+		result := h.coreEngine.TestResult(treeId)
 		if result == nil {
 			c.JSON(http.StatusNotFound, gin.H{"message": "not found"})
 			return

@@ -67,7 +67,7 @@ func (a *Agent) Start() {
 	testResult.Result = resultSet
 	testResult.TreeID = a.tree.ID
 	testResult.AgentID = a.idx
-
+	testResult.FinishedAt = time.Now()
 	a.resultCh <- testResult
 }
 

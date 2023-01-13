@@ -46,7 +46,7 @@ func (c *defaultHttpClient) Visit(method, url string, body io.Reader, headers ma
 	return &types.ResponseResult{
 		StatusCode: resp.StatusCode,
 		Duration:   ms,
-		StartedAt:  &s,
-		FinishedAt: &e,
+		StartedAt:  s,
+		FinishedAt: e,
 	}, nil
 }

@@ -79,7 +79,7 @@ func (e *DefaultEngine) onFlush() {
 	defer e.mu.Unlock()
 	for k, v := range e.resultMap {
 		t := time.Now()
-		if t.Sub(*v.FinishedAt) > maxResultAge {
+		if t.Sub(v.FinishedAt) > maxResultAge {
 			e.resultRepository.Clear(k)
 			delete(e.resultMap, k)
 			delete(e.statusMap, k)
@@ -96,13 +96,15 @@ func (e *DefaultEngine) onResult(result *types.AgentResult) {
 	e.statusMap[types.TreeID(result.TreeID)].FinishedAt = &now
 	e.resultMap[types.TreeID(result.TreeID)] = result
 
-	log.Printf("Finished tree: %s", result.String())
-	log.Printf("Duration was: %s", result.Duration().String())
-	e.resultRepository.Insert(result)
+	err := e.resultRepository.Insert(result)
+
+	if err != nil {
+		log.Printf("Error inserting result: %v", err)
+	}
 }
 
-func (e *DefaultEngine) ById(id string) *types.LoopStatus {
-	return e.statusMap[types.TreeID(id)]
+func (e *DefaultEngine) LoopStatus(treeID string) *types.LoopStatus {
+	return e.statusMap[types.TreeID(treeID)]
 }
 
 func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
@@ -116,22 +118,23 @@ func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
 	return nil
 }
 
-func (e *DefaultEngine) visitTree(tree *types.Tree) {
-	n := tree.Config.AgentAmount
+func (e *DefaultEngine) TestResult(id string) *types.TestResult {
+	return e.resultRepository.Get(types.TreeID(id))
+}
+
+func (e *DefaultEngine) visitTree(t *types.Tree) {
+	n := t.Config.AgentAmount
+	e.resultRepository.Prepare(types.TreeID(t.ID), *t.Config)
 	for i := 0; i < n; i++ {
 		go func(i int) {
 			a := agent.New(
 				i,
-				tree,
+				t,
 				e.resultCh,
 				e.visitorCreator())
 			a.Start()
 		}(i)
 	}
-}
-
-func (e *DefaultEngine) Get(id string) *types.TestResult {
-	return e.resultRepository.Get(types.TreeID(id))
 }
 
 func (e *DefaultEngine) Cancel(id string) error {

@@ -37,8 +37,8 @@ type (
 	}
 
 	LoopStatus struct {
-		TreeID     string     `json:"treeID"`
 		IsDone     bool       `json:"isDone"`
+		TreeID     string     `json:"treeID"`
 		StartedAt  *time.Time `json:"startedAt"`
 		FinishedAt *time.Time `json:"finishedAt"`
 	}
@@ -50,26 +50,25 @@ type (
 		Body       map[string]any      `json:"body"`
 		Headers    map[string][]string `json:"headers"`
 		Duration   time.Duration       `json:"durationInMs"`
-		StartedAt  *time.Time          `json:"startedAt"`
-		FinishedAt *time.Time          `json:"finishedAt"`
+		StartedAt  time.Time           `json:"startedAt"`
+		FinishedAt time.Time           `json:"finishedAt"`
 	}
 
 	AgentResult struct {
 		ErrorCount   int               `json:"errorCount"`
 		SuccessCount int               `json:"successCount"`
-		TreeID       string            `json:"treeID"`
 		AgentID      int               `json:"agentID"`
+		TreeID       string            `json:"treeID"`
 		Result       []*ResponseResult `json:"result"`
-		StartedAt    *time.Time        `json:"startedAt"`
-		FinishedAt   *time.Time        `json:"finishedAt"`
+		FinishedAt   time.Time         `json:"finishedAt"`
 	}
 
 	TestResult struct {
-		TreeID            string         `json:"treeID"`
-		AgentResults      []*AgentResult `json:"agentResults"`
 		Successful        bool           `json:"successful"`
 		TotalErrorCount   int            `json:"totalErrorCount"`
 		TotalSuccessCount int            `json:"totalSuccessCount"`
+		TreeID            string         `json:"treeID"`
+		AgentResults      []*AgentResult `json:"agentResults"`
 		TotalDuration     time.Duration  `json:"totalDuration"`
 	}
 )
@@ -79,9 +78,13 @@ func (n *Node) String() string {
 }
 
 func (tr *AgentResult) String() string {
-	return fmt.Sprintf("AgentResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d, StartedAt: %v, FinishedAt: %v }", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result), tr.StartedAt, tr.FinishedAt)
+	return fmt.Sprintf("AgentResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d}", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result))
 }
 
 func (tr *AgentResult) Duration() time.Duration {
-	return tr.FinishedAt.Sub(*tr.StartedAt)
+	d := time.Duration(0)
+	for _, r := range tr.Result {
+		d += r.Duration
+	}
+	return d
 }

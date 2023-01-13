@@ -7,10 +7,12 @@ import (
 	"chasqi-go/data"
 	"chasqi-go/data/result"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
 func main() {
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	r := gin.Default()
 	e := engine.New(
 		func() agent.NodeVisitor { return data.NewDefaultHttpClient() },
@@ -23,10 +25,11 @@ func main() {
 		handlePing(c)
 	})
 
-	gateway := r.Group("/gateway")
+	gw := r.Group("/gateway")
 	{
-		gateway.GET("", h.Get)
-		gateway.POST("", h.Post)
+		gw.GET("/status/:treeId", h.Get)
+		gw.GET("/result/:treeId", h.Get)
+		gw.POST("", h.Post)
 	}
 
 	go func() {
