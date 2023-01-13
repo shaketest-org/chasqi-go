@@ -36,8 +36,6 @@ func (a *Agent) Start() {
 	testResult := types.AgentResult{}
 	succCount := 0
 	errCount := 0
-	s := time.Now()
-	testResult.StartedAt = &s
 
 	for currentNode != nil && !a.stopped {
 		result, err := a.visit(currentNode)
@@ -63,12 +61,12 @@ func (a *Agent) Start() {
 		}
 	}
 
-	e := time.Now()
-	testResult.FinishedAt = &e
+	// Enrich the result
 	testResult.SuccessCount = succCount
 	testResult.ErrorCount = errCount
 	testResult.Result = resultSet
 	testResult.TreeID = a.tree.ID
+	testResult.AgentID = a.idx
 
 	a.resultCh <- testResult
 }
