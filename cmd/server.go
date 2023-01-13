@@ -4,7 +4,7 @@ import (
 	"chasqi-go/cmd/gateway"
 	"chasqi-go/core/agent"
 	"chasqi-go/core/engine"
-	"chasqi-go/visitor"
+	"chasqi-go/data"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -12,7 +12,7 @@ import (
 func main() {
 	r := gin.Default()
 	e := engine.New(
-		func() agent.NodeVisitor { return visitor.NewDefaultHttpClient() },
+		func() agent.NodeVisitor { return data.NewDefaultHttpClient() },
 		make(chan struct{}),
 	)
 	h := gateway.NewHandler(e)

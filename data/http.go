@@ -1,4 +1,4 @@
-package visitor
+package data
 
 import (
 	"chasqi-go/types"
@@ -41,10 +41,10 @@ func (c *defaultHttpClient) Visit(method, url string, body io.Reader, headers ma
 
 	e := time.Now()
 
-	ms := e.Sub(s).Milliseconds()
+	ms := e.Sub(s)
 
 	return &types.ResponseResult{
-		StatusCode:   resp.StatusCode,
-		DurationInMs: ms,
+		StatusCode: resp.StatusCode,
+		Duration:   ms,
 	}, nil
 }
