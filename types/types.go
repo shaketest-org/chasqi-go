@@ -25,6 +25,8 @@ type (
 		MaxFailureRate float32 `json:"maxFailureRate"`
 	}
 
+	TreeID string
+
 	Tree struct {
 		Config *Config `json:"config"`
 		Root   *Node   `json:"root"`
@@ -47,11 +49,14 @@ type (
 	}
 
 	ResponseResult struct {
-		StatusCode   int        `json:"statusCode"`
-		DurationInMs int64      `json:"durationInMs"`
-		StartedAt    *time.Time `json:"startedAt"`
-		FinishedAt   *time.Time `json:"finishedAt"`
-		Node         *Node      `json:"node"`
+		StatusCode   int                 `json:"statusCode"`
+		Method       string              `json:"method"`
+		Url          string              `json:"url"`
+		Body         map[string]any      `json:"body"`
+		Headers      map[string][]string `json:"headers"`
+		DurationInMs int64               `json:"durationInMs"`
+		StartedAt    *time.Time          `json:"startedAt"`
+		FinishedAt   *time.Time          `json:"finishedAt"`
 	}
 )
 

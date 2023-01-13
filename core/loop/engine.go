@@ -3,7 +3,7 @@ package loop
 import "chasqi-go/types"
 
 type StatusGetter interface {
-	ById(id string) (*types.LoopStatus, error)
+	ById(id string) *types.LoopStatus
 }
 
 type TreeEnqueuer interface {
@@ -15,7 +15,7 @@ type Canceler interface {
 }
 
 type ResultGetter interface {
-	Get(id string) (*types.TestResult, error)
+	Get(id string) *types.TestResult
 }
 
 type Engine interface {

@@ -1,7 +1,7 @@
 {
   "root": {
     "method": "GET",
-    "path": "/api/users",
+    "path": "http://www.chasqi.com/api/users",
     "headers": {
       "Content-Type": [
         "application/json"
@@ -11,7 +11,7 @@
       "delay": 0.5,
       "after": {
         "method": "POST",
-        "path": "/api/users",
+        "path": "http://www.chasqi.com/api/users",
         "body": {
           "userId": 2,
           "username": "JaneDoe"
@@ -25,7 +25,7 @@
           "delay": 0.2,
           "after": {
             "method": "GET",
-            "path": "/api/users/2",
+            "path": "http://www.chasqi.com/api/users/2",
             "headers": {
               "Content-Type": [
                 "application/json"
@@ -35,7 +35,7 @@
               "delay": 0.1,
               "after": {
                 "method": "PUT",
-                "path": "/api/users/2",
+                "path": "http://www.chasqi.com/api/users/2",
                 "body": {
                   "userId": 2,
                   "username": "JaneSmith"

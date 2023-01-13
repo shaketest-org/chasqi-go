@@ -61,7 +61,9 @@ func (a *Agent) Start() {
 			succCount++
 		}
 
-		result.Node = currentNode
+		result.Body = currentNode.Body
+		result.Method = currentNode.Method
+		result.Headers = currentNode.Headers
 		resultSet = append(resultSet, result)
 		nextEdge := currentNode.Next
 
@@ -82,7 +84,6 @@ func (a *Agent) Start() {
 	testResult.TreeID = a.tree.ID
 
 	a.resultCh <- testResult
-
 }
 
 func (a *Agent) Stop() {
