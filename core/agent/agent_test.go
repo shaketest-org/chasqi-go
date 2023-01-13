@@ -19,7 +19,7 @@ var fixture []byte
 type AgentTestSuite struct {
 	suite.Suite
 	NodeVisitorMock *mock_agent.MockNodeVisitor
-	resultCh        chan types.TestResult
+	resultCh        chan types.AgentResult
 }
 
 func (s *AgentTestSuite) SetupTest() {
@@ -29,19 +29,19 @@ func (s *AgentTestSuite) SetupTest() {
 
 	controller := gomock.NewController(s.T())
 	s.NodeVisitorMock = mock_agent.NewMockNodeVisitor(controller)
-	s.resultCh = make(chan types.TestResult)
+	s.resultCh = make(chan types.AgentResult)
 }
 
 func (s *AgentTestSuite) TestAgent_StartShouldCallExpectedRoutes() {
 	tree := testTree()
-	resultCh := make(chan types.TestResult, 0)
+	resultCh := make(chan types.AgentResult, 0)
 	subject := New(0, tree, resultCh, s.NodeVisitorMock)
 	postBody := new(bytes.Buffer)
 	putBody := new(bytes.Buffer)
 	successfulResponse := &types.ResponseResult{
 		StatusCode: 200,
 	}
-	var result *types.TestResult
+	var result *types.AgentResult
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
@@ -65,7 +65,7 @@ func (s *AgentTestSuite) TestAgent_StartShouldCallExpectedRoutes() {
 
 	s.NodeVisitorMock.EXPECT().Visit(
 		"GET",
-		"/api/users",
+		"http://www.byteshake.io/api/users",
 		nil,
 		map[string][]string{
 			"Content-Type": {"application/json"},
@@ -73,14 +73,14 @@ func (s *AgentTestSuite) TestAgent_StartShouldCallExpectedRoutes() {
 	).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"POST",
-		"/api/users",
+		"http://www.byteshake.io/api/users",
 		postBody,
 		map[string][]string{
 			"Content-Type": {"application/json"},
 		}).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"GET",
-		"/api/users/2",
+		"http://www.byteshake.io/api/users/2",
 		nil,
 		map[string][]string{
 			"Content-Type": {"application/json"},
@@ -88,7 +88,7 @@ func (s *AgentTestSuite) TestAgent_StartShouldCallExpectedRoutes() {
 	).Return(successfulResponse, nil).Times(1)
 	s.NodeVisitorMock.EXPECT().Visit(
 		"PUT",
-		"/api/users/2",
+		"http://www.byteshake.io/api/users/2",
 		putBody,
 		map[string][]string{
 			"Content-Type": {"application/json"},
