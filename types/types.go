@@ -47,6 +47,7 @@ type (
 		ErrorCount   int               `json:"errorCount"`
 		SuccessCount int               `json:"successCount"`
 		TreeID       string            `json:"treeID"`
+		AgentID      int               `json:"agentID"`
 		Result       []*ResponseResult `json:"result"`
 		StartedAt    *time.Time        `json:"startedAt"`
 		FinishedAt   *time.Time        `json:"finishedAt"`

@@ -4,6 +4,7 @@ import (
 	"chasqi-go/core/engine"
 	"chasqi-go/types"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"strings"
 )
@@ -16,16 +17,7 @@ func NewHandler(coreEngine *engine.DefaultEngine) *Handler {
 	return &Handler{coreEngine: coreEngine}
 }
 
-func (h *Handler) HandleRequest(c *gin.Context) {
-	switch c.Request.Method {
-	case "GET":
-		h.handleGet(c)
-	case "POST":
-		h.handlePost(c)
-	}
-}
-
-func (h *Handler) handleGet(c *gin.Context) {
+func (h *Handler) Get(c *gin.Context) {
 	if strings.Contains("status", c.Request.URL.Path) {
 		treeId := c.Param("treeId")
 		status := h.coreEngine.ById(treeId)
@@ -48,15 +40,17 @@ func (h *Handler) handleGet(c *gin.Context) {
 	}
 }
 
-func (h *Handler) handlePost(c *gin.Context) {
-	var treeRequest types.Tree
-	if err := c.ShouldBindJSON(&treeRequest); err != nil {
+func (h *Handler) Post(c *gin.Context) {
+	treeRequest := &types.Tree{}
+
+	if err := c.BindJSON(treeRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	if err := h.coreEngine.Enqueue(&treeRequest); err != nil {
+	treeRequest.ID = uuid.NewString()
+	if err := h.coreEngine.Enqueue(treeRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusAccepted, gin.H{"message": "accepted"})
+	c.JSON(http.StatusAccepted, treeRequest)
 }

@@ -21,7 +21,11 @@ func main() {
 		handlePing(c)
 	})
 
-	r.Group("/gateway", h.HandleRequest)
+	gateway := r.Group("/gateway")
+	{
+		gateway.GET("", h.Get)
+		gateway.POST("", h.Post)
+	}
 
 	go func() {
 		e.Start()
