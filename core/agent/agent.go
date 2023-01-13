@@ -11,14 +11,14 @@ import (
 type Agent struct {
 	idx      int
 	tree     *types.Tree
-	resultCh chan types.TestResult
+	resultCh chan types.AgentResult
 	visitor  NodeVisitor
 	stopped  bool
 }
 
 func New(idx int,
 	t *types.Tree,
-	resultCh chan types.TestResult,
+	resultCh chan types.AgentResult,
 	visitor NodeVisitor) *Agent {
 	return &Agent{
 		idx:      idx,
@@ -33,7 +33,7 @@ func (a *Agent) Start() {
 
 	currentNode := a.tree.Root
 	var resultSet []*types.ResponseResult
-	testResult := types.TestResult{}
+	testResult := types.AgentResult{}
 	succCount := 0
 	errCount := 0
 	s := time.Now()

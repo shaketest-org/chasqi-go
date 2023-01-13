@@ -43,7 +43,18 @@ type (
 		FinishedAt *time.Time `json:"finishedAt"`
 	}
 
-	TestResult struct {
+	ResponseResult struct {
+		StatusCode int                 `json:"statusCode"`
+		Method     string              `json:"method"`
+		Url        string              `json:"url"`
+		Body       map[string]any      `json:"body"`
+		Headers    map[string][]string `json:"headers"`
+		Duration   time.Duration       `json:"durationInMs"`
+		StartedAt  *time.Time          `json:"startedAt"`
+		FinishedAt *time.Time          `json:"finishedAt"`
+	}
+
+	AgentResult struct {
 		ErrorCount   int               `json:"errorCount"`
 		SuccessCount int               `json:"successCount"`
 		TreeID       string            `json:"treeID"`
@@ -53,15 +64,13 @@ type (
 		FinishedAt   *time.Time        `json:"finishedAt"`
 	}
 
-	ResponseResult struct {
-		StatusCode   int                 `json:"statusCode"`
-		Method       string              `json:"method"`
-		Url          string              `json:"url"`
-		Body         map[string]any      `json:"body"`
-		Headers      map[string][]string `json:"headers"`
-		DurationInMs int64               `json:"durationInMs"`
-		StartedAt    *time.Time          `json:"startedAt"`
-		FinishedAt   *time.Time          `json:"finishedAt"`
+	TestResult struct {
+		TreeID            string         `json:"treeID"`
+		AgentResults      []*AgentResult `json:"agentResults"`
+		Successful        bool           `json:"successful"`
+		TotalErrorCount   int            `json:"totalErrorCount"`
+		TotalSuccessCount int            `json:"totalSuccessCount"`
+		TotalDuration     time.Duration  `json:"totalDuration"`
 	}
 )
 
@@ -69,10 +78,10 @@ func (n *Node) String() string {
 	return n.Method + " " + n.Path
 }
 
-func (tr *TestResult) String() string {
-	return fmt.Sprintf("TestResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d, StartedAt: %v, FinishedAt: %v }", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result), tr.StartedAt, tr.FinishedAt)
+func (tr *AgentResult) String() string {
+	return fmt.Sprintf("AgentResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d, StartedAt: %v, FinishedAt: %v }", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result), tr.StartedAt, tr.FinishedAt)
 }
 
-func (tr *TestResult) Duration() time.Duration {
+func (tr *AgentResult) Duration() time.Duration {
 	return tr.FinishedAt.Sub(*tr.StartedAt)
 }
