@@ -4,7 +4,7 @@
 
 An E2E testing tool similar to k6 (https://k6.io/) only more lightweight as it's written in Go. The main difference is
 that it is intended to be
-used more as a run-time upon which you can build your tooling, such as your own testing tool with
+used more as a run-time upon which you can build your tooling, such as your own testing platform with
 advanced statistics, real-time monitoring, etc.
 
 # Motivation
