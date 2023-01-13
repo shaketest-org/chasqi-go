@@ -64,12 +64,13 @@ type (
 	}
 
 	TestResult struct {
+		TreeID            string         `json:"treeID"`
+		TotalDurationInS  float64        `json:"totalDuration"`
+		AgentCount        int            `json:"agentCount"`
 		Successful        bool           `json:"successful"`
 		TotalErrorCount   int            `json:"totalErrorCount"`
 		TotalSuccessCount int            `json:"totalSuccessCount"`
-		TreeID            string         `json:"treeID"`
 		AgentResults      []*AgentResult `json:"agentResults"`
-		TotalDuration     time.Duration  `json:"totalDuration"`
 	}
 )
 

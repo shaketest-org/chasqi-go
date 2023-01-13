@@ -28,7 +28,6 @@ func (h *Handler) Handle(c *gin.Context) {
 }
 
 func (h *Handler) Get(c *gin.Context) {
-	log.Printf("Path: %s", c.Request.URL.Path)
 	if strings.Contains(c.Request.URL.Path, "status") {
 		treeId := c.Param("treeId")
 		status := h.coreEngine.LoopStatus(treeId)

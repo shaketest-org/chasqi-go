@@ -32,7 +32,8 @@ func (r *Manager) Insert(result *types.AgentResult) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	treeID := types.TreeID(result.TreeID)
-	if r.treeConfigMap[treeID] == nil {
+	config := r.treeConfigMap[treeID]
+	if config == nil {
 		return fmt.Errorf("config for tree with id %s does not exist", result.TreeID)
 	}
 
@@ -42,14 +43,15 @@ func (r *Manager) Insert(result *types.AgentResult) error {
 
 	if r.checkIfAllAgentsHaveFinished(treeID) {
 		log.Printf("all agents have finished for tree %s", treeID)
-		errCount, okCount, duration := GetTotalErrorCount(arMap)
+		errCount, okCount, duration := GetTotalStats(arMap)
 		r.resultMap[treeID] = &types.TestResult{
 			TreeID:            result.TreeID,
+			AgentCount:        config.AgentAmount,
 			AgentResults:      arMap,
 			Successful:        true,
 			TotalErrorCount:   errCount,
 			TotalSuccessCount: okCount,
-			TotalDuration:     time.Duration(duration * float64(time.Second)),
+			TotalDurationInS:  time.Duration(duration * float64(time.Second)).Seconds(),
 		}
 		delete(r.agentResultMap, treeID)
 	}

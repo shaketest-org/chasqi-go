@@ -5,6 +5,7 @@ import (
 	"chasqi-go/types"
 	"fmt"
 	"log"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -127,6 +128,8 @@ func (e *DefaultEngine) visitTree(t *types.Tree) {
 	e.resultRepository.Prepare(types.TreeID(t.ID), *t.Config)
 	for i := 0; i < n; i++ {
 		go func(i int) {
+			// random sleep
+			time.Sleep(time.Duration(rand.Intn(3000)) * time.Millisecond)
 			a := agent.New(
 				i,
 				t,
@@ -135,6 +138,10 @@ func (e *DefaultEngine) visitTree(t *types.Tree) {
 			a.Start()
 		}(i)
 	}
+}
+
+func randomSleep() {
+	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 }
 
 func (e *DefaultEngine) Cancel(id string) error {
