@@ -139,15 +139,16 @@ func (e *DefaultEngine) Cancel(id string) error {
 	panic("implement me")
 }
 
-func New(visitorCreator func() agent.NodeVisitor, exitCh chan struct{}) *DefaultEngine {
+func New(visitorCreator func() agent.NodeVisitor, repository ResultRepository, exitCh chan struct{}) *DefaultEngine {
 	return &DefaultEngine{
-		statusMap:      make(map[types.TreeID]*types.LoopStatus),
-		activeTrees:    make(map[types.TreeID]*types.Tree),
-		resultMap:      make(map[types.TreeID]*types.AgentResult),
-		enqueuedTrees:  make([]*types.Tree, 0),
-		visitorCreator: visitorCreator,
-		resultCh:       make(chan types.AgentResult, 1000),
-		exitCh:         exitCh,
-		mu:             &sync.Mutex{},
+		resultRepository: repository,
+		statusMap:        make(map[types.TreeID]*types.LoopStatus),
+		activeTrees:      make(map[types.TreeID]*types.Tree),
+		resultMap:        make(map[types.TreeID]*types.AgentResult),
+		enqueuedTrees:    make([]*types.Tree, 0),
+		visitorCreator:   visitorCreator,
+		resultCh:         make(chan types.AgentResult, 1000),
+		exitCh:           exitCh,
+		mu:               &sync.Mutex{},
 	}
 }
