@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type (
 	Node struct {
@@ -62,4 +65,8 @@ type (
 
 func (n *Node) String() string {
 	return n.Method + " " + n.Path
+}
+
+func (tr *TestResult) String() string {
+	return fmt.Sprintf("TestResult: { ErrorCount: %d, SuccessCount: %d, TreeID: %s, Resulst: %d, StartedAt: %v, FinishedAt: %v }", tr.ErrorCount, tr.SuccessCount, tr.TreeID, len(tr.Result), tr.StartedAt, tr.FinishedAt)
 }

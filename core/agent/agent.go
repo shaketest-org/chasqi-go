@@ -40,17 +40,28 @@ func (a *Agent) Start() {
 	testResult.StartedAt = &s
 
 	for currentNode != nil && !a.stopped {
-		var b *bytes.Buffer
+		var result *types.ResponseResult
+		var err error
+
+		// Unfortunately the nil interface is not really nil in go
 		if currentNode.Body != nil {
+			var b *bytes.Buffer
 			b = new(bytes.Buffer)
 			json.NewEncoder(b).Encode(currentNode.Body)
+			result, err = a.visitor.Visit(
+				currentNode.Method,
+				currentNode.Path,
+				b,
+				currentNode.Headers,
+			)
+		} else {
+			result, err = a.visitor.Visit(
+				currentNode.Method,
+				currentNode.Path,
+				nil,
+				currentNode.Headers,
+			)
 		}
-		result, err := a.visitor.Visit(
-			currentNode.Method,
-			currentNode.Path,
-			b,
-			currentNode.Headers,
-		)
 		if err != nil {
 			log.Printf("Agent %d failed to visit node %s: %s", a.idx, currentNode.Path, err)
 		}

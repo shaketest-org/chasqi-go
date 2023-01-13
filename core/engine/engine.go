@@ -50,7 +50,7 @@ coreLoop:
 		case <-flushTimer.C:
 			break
 		case result := <-e.resultCh:
-			log.Printf("got result: %v", result)
+			log.Printf("got result with %d entries", len(result.Result))
 			e.onResult(&result)
 		case <-e.exitCh:
 			break coreLoop
@@ -90,6 +90,8 @@ func (e *DefaultEngine) onResult(result *types.TestResult) {
 	e.doneTrees[types.TreeID(result.TreeID)] = t
 	e.statusMap[types.TreeID(result.TreeID)].IsDone = true
 	e.resultMap[types.TreeID(result.TreeID)] = result
+
+	log.Printf("Finished tree: %s", result.String())
 }
 
 func (e *DefaultEngine) visitTree(tree *types.Tree) {

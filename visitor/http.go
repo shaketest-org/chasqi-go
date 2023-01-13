@@ -4,6 +4,7 @@ import (
 	"chasqi-go/types"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -23,6 +24,7 @@ func (c *defaultHttpClient) Visit(method, url string, body io.Reader, headers ma
 
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
+		log.Printf("error while creating request: %s", err)
 		return nil, err
 	}
 	for k, v := range headers {
