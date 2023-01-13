@@ -40,28 +40,7 @@ func (a *Agent) Start() {
 	testResult.StartedAt = &s
 
 	for currentNode != nil && !a.stopped {
-		var result *types.ResponseResult
-		var err error
-
-		// Unfortunately the nil interface is not really nil in go
-		if currentNode.Body != nil {
-			var b *bytes.Buffer
-			b = new(bytes.Buffer)
-			json.NewEncoder(b).Encode(currentNode.Body)
-			result, err = a.visitor.Visit(
-				currentNode.Method,
-				currentNode.Path,
-				b,
-				currentNode.Headers,
-			)
-		} else {
-			result, err = a.visitor.Visit(
-				currentNode.Method,
-				currentNode.Path,
-				nil,
-				currentNode.Headers,
-			)
-		}
+		result, err := a.visit(currentNode)
 		if err != nil {
 			log.Printf("Agent %d failed to visit node %s: %s", a.idx, currentNode.Path, err)
 		}
@@ -71,13 +50,10 @@ func (a *Agent) Start() {
 		} else {
 			succCount++
 		}
-
-		result.Body = currentNode.Body
-		result.Method = currentNode.Method
-		result.Headers = currentNode.Headers
+		a.enrichResult(result, *currentNode)
 		resultSet = append(resultSet, result)
-		nextEdge := currentNode.Next
 
+		nextEdge := currentNode.Next
 		if nextEdge != nil {
 			time.Sleep(time.Duration(nextEdge.Delay) * time.Second)
 			currentNode = nextEdge.After
@@ -95,6 +71,34 @@ func (a *Agent) Start() {
 	testResult.TreeID = a.tree.ID
 
 	a.resultCh <- testResult
+}
+
+func (a *Agent) visit(n *types.Node) (*types.ResponseResult, error) {
+	// Unfortunately the nil interface is not really nil in go
+	if n.Body != nil {
+		var b *bytes.Buffer
+		b = new(bytes.Buffer)
+		json.NewEncoder(b).Encode(n.Body)
+		return a.visitor.Visit(
+			n.Method,
+			n.Path,
+			b,
+			n.Headers,
+		)
+	} else {
+		return a.visitor.Visit(
+			n.Method,
+			n.Path,
+			nil,
+			n.Headers,
+		)
+	}
+}
+
+func (a *Agent) enrichResult(r *types.ResponseResult, n types.Node) {
+	r.Body = n.Body
+	r.Method = n.Method
+	r.Headers = n.Headers
 }
 
 func (a *Agent) Stop() {
