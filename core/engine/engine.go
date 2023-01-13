@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+const (
+	loopInterval  = 1 * time.Second
+	flushInterval = 5 * 60 * time.Second
+	maxResultAge  = 5 * 60 * time.Second
+)
+
 type DefaultEngine struct {
 	hasStopped       bool
 	visitorCreator   func() agent.NodeVisitor
@@ -16,33 +22,19 @@ type DefaultEngine struct {
 	enqueuedTrees    []*types.Tree
 	statusMap        map[types.TreeID]*types.LoopStatus
 	activeTrees      map[types.TreeID]*types.Tree
-	doneTrees        map[types.TreeID]*types.Tree
-	resultMap        map[types.TreeID]*types.TestResult
-	resultCh         chan types.TestResult
+	resultMap        map[types.TreeID]*types.AgentResult
+	resultCh         chan types.AgentResult
 	exitCh           chan struct{}
 	mu               *sync.Mutex
 }
 
-func (e *DefaultEngine) ById(id string) *types.LoopStatus {
-
-	return e.statusMap[types.TreeID(id)]
-}
-
-func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
-	if e.hasStopped {
-		return fmt.Errorf("DefaultEngine has stopped")
-	}
-	log.Printf("Enqueuing tree: %s", tree.ID)
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	e.enqueuedTrees = append(e.enqueuedTrees, tree)
-	return nil
-}
-
+// Start begins the engine loop.
+// Every second it will check if there are any trees to be processed.
+// Every 5 minutes it will flush the result map.
 func (e *DefaultEngine) Start() {
 	log.Printf("Test Engine started")
-	loopTimer := time.NewTicker(1 * time.Second)
-	flushTimer := time.NewTicker(5 * 60 * time.Second)
+	loopTimer := time.NewTicker(loopInterval)
+	flushTimer := time.NewTicker(flushInterval)
 coreLoop:
 	for {
 		select {
@@ -51,7 +43,6 @@ coreLoop:
 		case <-flushTimer.C:
 			e.onFlush()
 		case result := <-e.resultCh:
-			log.Printf("got result with %d entries", len(result.Result))
 			e.onResult(&result)
 		case <-e.exitCh:
 			break coreLoop
@@ -88,26 +79,41 @@ func (e *DefaultEngine) onFlush() {
 	defer e.mu.Unlock()
 	for k, v := range e.resultMap {
 		t := time.Now()
-		if t.Sub(*v.FinishedAt) > 5*time.Minute {
+		if t.Sub(*v.FinishedAt) > maxResultAge {
+			e.resultRepository.Clear(k)
 			delete(e.resultMap, k)
-			delete(e.doneTrees, k)
+			delete(e.statusMap, k)
 		}
 	}
 }
 
-func (e *DefaultEngine) onResult(result *types.TestResult) {
+func (e *DefaultEngine) onResult(result *types.AgentResult) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	t := e.activeTrees[types.TreeID(result.TreeID)]
 	delete(e.activeTrees, types.TreeID(result.TreeID))
 	now := time.Now()
-	e.doneTrees[types.TreeID(result.TreeID)] = t
 	e.statusMap[types.TreeID(result.TreeID)].IsDone = true
 	e.statusMap[types.TreeID(result.TreeID)].FinishedAt = &now
 	e.resultMap[types.TreeID(result.TreeID)] = result
 
 	log.Printf("Finished tree: %s", result.String())
 	log.Printf("Duration was: %s", result.Duration().String())
+	e.resultRepository.Insert(result)
+}
+
+func (e *DefaultEngine) ById(id string) *types.LoopStatus {
+	return e.statusMap[types.TreeID(id)]
+}
+
+func (e *DefaultEngine) Enqueue(tree *types.Tree) error {
+	if e.hasStopped {
+		return fmt.Errorf("DefaultEngine has stopped")
+	}
+	log.Printf("Enqueuing tree: %s", tree.ID)
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.enqueuedTrees = append(e.enqueuedTrees, tree)
+	return nil
 }
 
 func (e *DefaultEngine) visitTree(tree *types.Tree) {
@@ -125,7 +131,7 @@ func (e *DefaultEngine) visitTree(tree *types.Tree) {
 }
 
 func (e *DefaultEngine) Get(id string) *types.TestResult {
-	return e.resultMap[types.TreeID(id)]
+	return e.resultRepository.Get(types.TreeID(id))
 }
 
 func (e *DefaultEngine) Cancel(id string) error {
@@ -137,11 +143,10 @@ func New(visitorCreator func() agent.NodeVisitor, exitCh chan struct{}) *Default
 	return &DefaultEngine{
 		statusMap:      make(map[types.TreeID]*types.LoopStatus),
 		activeTrees:    make(map[types.TreeID]*types.Tree),
-		doneTrees:      make(map[types.TreeID]*types.Tree),
-		resultMap:      make(map[types.TreeID]*types.TestResult),
+		resultMap:      make(map[types.TreeID]*types.AgentResult),
 		enqueuedTrees:  make([]*types.Tree, 0),
 		visitorCreator: visitorCreator,
-		resultCh:       make(chan types.TestResult, 1000),
+		resultCh:       make(chan types.AgentResult, 1000),
 		exitCh:         exitCh,
 		mu:             &sync.Mutex{},
 	}
