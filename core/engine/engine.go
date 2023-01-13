@@ -10,16 +10,17 @@ import (
 )
 
 type DefaultEngine struct {
-	statusMap      map[types.TreeID]*types.LoopStatus
-	activeTrees    map[types.TreeID]*types.Tree
-	doneTrees      map[types.TreeID]*types.Tree
-	resultMap      map[types.TreeID]*types.TestResult
-	enqueuedTrees  []*types.Tree
-	visitorCreator func() agent.NodeVisitor
-	resultCh       chan types.TestResult
-	mu             *sync.Mutex
-	exitCh         chan struct{}
-	hasStopped     bool
+	hasStopped       bool
+	visitorCreator   func() agent.NodeVisitor
+	resultRepository ResultRepository
+	enqueuedTrees    []*types.Tree
+	statusMap        map[types.TreeID]*types.LoopStatus
+	activeTrees      map[types.TreeID]*types.Tree
+	doneTrees        map[types.TreeID]*types.Tree
+	resultMap        map[types.TreeID]*types.TestResult
+	resultCh         chan types.TestResult
+	exitCh           chan struct{}
+	mu               *sync.Mutex
 }
 
 func (e *DefaultEngine) ById(id string) *types.LoopStatus {
