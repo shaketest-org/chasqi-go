@@ -39,7 +39,6 @@ func TestRepository_Insert(t *testing.T) {
 	})
 	t.Run("should return a result if max agentCount equals to agentResults", func(t *testing.T) {
 		subject := NewManager()
-		s := time.Now()
 		f := time.Now()
 
 		subject.Prepare(types.TreeID(treeID),
@@ -48,8 +47,7 @@ func TestRepository_Insert(t *testing.T) {
 			})
 		err := subject.Insert(&types.AgentResult{
 			TreeID:     treeID,
-			StartedAt:  &s,
-			FinishedAt: &f,
+			FinishedAt: f,
 		})
 		if err != nil {
 			t.Error("unexpected error ", err)

@@ -54,7 +54,7 @@ func (a *Agent) Start() {
 		nextEdge := currentNode.Next
 		if nextEdge != nil {
 			time.Sleep(time.Duration(nextEdge.Delay) * time.Second)
-			currentNode = nextEdge.After
+			currentNode = nextEdge.Next
 		} else {
 			// we reached the end of the tree
 			currentNode = nil
@@ -97,6 +97,7 @@ func (a *Agent) enrichResult(r *types.ResponseResult, n types.Node) {
 	r.Body = n.Body
 	r.Method = n.Method
 	r.Headers = n.Headers
+	r.Url = n.Path
 }
 
 func (a *Agent) Stop() {

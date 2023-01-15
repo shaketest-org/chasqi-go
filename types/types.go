@@ -17,8 +17,8 @@ type (
 
 	Edge struct {
 		Delay float32 `json:"delay"`
-		// If after is null then it's the end of the journey
-		After *Node `json:"after"`
+		// If next is null then it's the end of the journey
+		Next *Node `json:"next"`
 		// If before is null then it's the root
 		Before *Node `json:"before"`
 	}
